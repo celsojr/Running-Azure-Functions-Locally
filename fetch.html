@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <h1>The Fetch Function</h1>
+        <p>This is the result: <span id="result"></span></p>
+
+        <script>
+            class fetchAsync
+            {
+                static async getAwaiter(url, options) {
+                    this.response = await fetch(url, options);
+                    return this;
+                }
+                static async getResult() {
+                    if (this.response.ok) {
+                        return await this.response.text();
+                    }
+                    else {
+                        throw new Error(await this.response.text());
+                    }
+                }
+            }
+
+            function write(text) {
+                document.getElementById("result").innerHTML = text;
+            }
+            
+            (async () => {
+                const url = new URL("http://localhost:7071/api/HelloWorldFunc");
+
+                // Browsers compatibility
+                // https://caniuse.com/#feat=urlsearchparams
+                url.searchParams.append("name", "Azure Functions");
+
+                await fetchAsync.getAwaiter(url, { method: "POST" })
+                    .then(x => x.getResult())
+                    .then(write)
+                    .catch(ex => console.error(ex));
+            })();
+        </script>
+    </body>
+</html>
